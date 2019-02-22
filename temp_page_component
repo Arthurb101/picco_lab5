@@ -1,0 +1,57 @@
+<template>
+  <div class="hello">
+        <b-container>
+    <h2>Current temp </h2>
+        <h2>{{current_temp}}</h2>
+        <b-row>
+        <b-col>
+    <h2>Temp Log</h2>
+        {{recent_temps}}
+         </b-col>
+        <b-col>
+    <h2>Temp violation </h2>
+        {{log_violations}}
+        </b-col>
+        </b-row>
+   </b-container>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+
+export default {
+  name: 'HelloWorld',
+  data () {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+      current_temp:'',
+      recent_temps:[],
+      log_violations:[]
+    }
+  },
+   collect_temp: function(response) {
+    console.log(response)
+    data=response.data;
+    if(data.length > 0)
+    {
+    this.current_temp = data[data.length()-1][1];
+    }
+    this.recent_temps = data;
+  },
+  mounted(){
+  axios
+   .get('http://localhost:8080/sky/cloud/FURPSPGhVg1of8yrZfyoUK/temperature_store/temperatures')
+   .then(response => {
+    var data=response.data;
+    if(data.length > 0)
+    {
+    this.current_temp = data[data.length-1][1];
+    }
+    this.recent_temps = data;
+})
+ axios.get('http://localhost:8080/sky/cloud/FURPSPGhVg1of8yrZfyoUK/temperature_store/threshold_violations').then(response =>(this.log_violations=response.data) )
+
+ }
+}
+</script>
